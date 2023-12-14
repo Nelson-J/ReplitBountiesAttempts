@@ -21,10 +21,16 @@ companyNames=[]
 roles=[]
 attendeeData=[]
 
+#testerVariables
+countNames=0
+countCompanies=0
+countRoles=0
+
 #for every file in the folder
 for filename in os.listdir(image_folder):
     image = Image.open(os.path.join(image_folder, filename))
     extractedText = pytesseract.image_to_string(image)
+    print(extractedText)
 
     #prepocessing text
     lines = extractedText.split("\n")
@@ -39,7 +45,9 @@ for filename in os.listdir(image_folder):
             matchName = re.findall(patternName,line)
             
             if matchName:
+                print(matchName[0])
                 fullNames.append(matchName[0])
+                countNames+=1
 
         if not fullNames: #take only picture that has three required information
             continue
@@ -48,14 +56,22 @@ for filename in os.listdir(image_folder):
         patternCompany = r'^([A-Z].*?)\s-\s' #get text before first hyphen
         matchCompany = re.findall(patternCompany, line) 
         if matchCompany: #no company without fullName
+            print(matchCompany[0])
             companyNames.append(matchCompany[0])
+            countCompanies+=1
 
         #roles
         patternRoles = r'(?<=-)(?:(?!\b\w\b).)*' #match text after the first hyphen, ignore one-character words
         matchRole = re.findall(patternRoles,line)
         if matchRole: 
+            print(matchRole[0])
             roles.append(matchRole[0])
+            countRoles+=1
 
+print('Name Count ', countNames)
+print('Company Count ',countCompanies)
+print('Role Count ',countRoles)
+''' 
 #storing extracted data in memory
 for count in range(0, len(fullNames)):
     attendeeData.append({
@@ -70,4 +86,4 @@ with open('attendeeData.csv','w',newline='') as csvFile:
     writer = csv.DictWriter(csvFile, fieldnames=fieldNames)
 
     writer.writeheader
-    writer.writerows(attendeeData)
+    writer.writerows(attendeeData) '''
