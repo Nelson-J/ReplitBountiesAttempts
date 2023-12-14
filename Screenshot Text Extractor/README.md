@@ -9,4 +9,9 @@ Robinhood - software engineer"
 which means the full name is 'John Doe', the company name is 'Robinhood', and the role is 'software engineer'.
 
 ***Goal*** 
+
 Client wants to be able to extract this information from all screenshots and get them in a CSV which has all the attendee data formatted as {attendee full name, company name, role name}.
+
+**My Solution**
+
+This sollution works for all images found in the images folder, and will create a CSV file that will contain a list of all attendees
