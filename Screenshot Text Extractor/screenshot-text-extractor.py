@@ -3,6 +3,7 @@ import pytesseract
 import os
 import re
 import csv
+import cv2
 
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
@@ -28,9 +29,14 @@ countRoles=0
 
 #for every file in the folder
 for filename in os.listdir(image_folder):
-    image = Image.open(os.path.join(image_folder, filename))
-    extractedText = pytesseract.image_to_string(image)
-    print(extractedText)
+    #image = Image.open(os.path.join(image_folder, filename))
+    imageFromFile = cv2.imread(os.path.join(image_folder,filename))
+    #preprocessing image
+    grayscaleImage = cv2.cvtColor(imageFromFile,cv2.COLOR_BGR2GRAY)
+    imageThreshold = cv2.adaptiveThreshold(grayscaleImage,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,cv2.THRESH_BINARY,11,5)
+    #ret, imageThreshold = cv2.threshold(grayscaleImage, 0, 255, cv2.THRESH_OTSU | cv2.THRESH_BINARY_INV)
+    extractedText = pytesseract.image_to_string(imageThreshold)
+    #print(extractedText)
 
     #prepocessing text
     lines = extractedText.split("\n")
@@ -56,7 +62,7 @@ for filename in os.listdir(image_folder):
         patternCompany = r'^([A-Z].*?)\s-\s' #get text before first hyphen
         matchCompany = re.findall(patternCompany, line) 
         if matchCompany: #no company without fullName
-            print(matchCompany[0])
+            #print(matchCompany[0])
             companyNames.append(matchCompany[0])
             countCompanies+=1
 
@@ -64,7 +70,7 @@ for filename in os.listdir(image_folder):
         patternRoles = r'(?<=-)(?:(?!\b\w\b).)*' #match text after the first hyphen, ignore one-character words
         matchRole = re.findall(patternRoles,line)
         if matchRole: 
-            print(matchRole[0])
+            #print(matchRole[0])
             roles.append(matchRole[0])
             countRoles+=1
 
