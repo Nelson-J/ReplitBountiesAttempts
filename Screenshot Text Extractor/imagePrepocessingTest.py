@@ -1,29 +1,32 @@
 import numpy
 import cv2
-from matplotlib import pyplot
+from matplotlib import pyplot as plt
 import os
 from PIL import Image
 import pytesseract
 
-#enforce current working directory
-scriptDirectory = os.path.dirname(os.path.abspath(__file__ ))
+# Get the directory of the current script
+scriptDirectory = os.path.dirname(os.path.abspath(__file__))
 os.chdir(scriptDirectory)
+cwd = os.getcwd()
 
-#print(os.getcwd())
+OriginalImage = cv2.imread('.\\images\\screenshot_20231014_161426.png')
+#Detecting contours
+#Read and convert image to grayscale
+grayImage = cv2.imread('.\\images\\screenshot_20231014_161426.png',0)
+if grayImage is None:
+    print("File Does not exist at location: ")
+    print(cwd)
+    exit(0)
 
-imageFolder= r'.\images'
-image2 = cv2.imread('.\images\test.png')
-for filename in os.listdir(imageFolder):
-    image = cv2.imread(os.path.join(imageFolder,filename))
-    #image = cv2.imread(imageObject)
-    readyImage = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
-   # ret, readyImage = cv2.threshold(readyImage,0,255,cv2.THRESH_BINARY,cv2.THRESH_OTSU)
-    readyImage = cv2.adaptiveThreshold(readyImage,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,cv2.THRESH_BINARY,11,5)
-    #ret, readyImage = cv2.threshold(readyImage, 0, 255, cv2.THRESH_OTSU | cv2.THRESH_BINARY_INV)
-    recognizedText = pytesseract.image_to_string(readyImage)
+#apply binary threshold
+ret, binaryThresh = cv2.threshold(grayImage,167,255,cv2.THRESH_BINARY)
+cv2.imwrite('.\\images\\black_white\\grayImage.png',binaryThresh)
 
-#print(recognizedText)
-#image2.save('.\images\test.png', dpi=(300,300))
-pyplot.subplot(121), pyplot.imshow(image)
-pyplot.subplot(122), pyplot.imshow(readyImage)
-pyplot.show()
+#detect contours on binary image using CV2.CHAIN_APPROX_NONE
+contours, hierarchy = cv2.findContours(image=binaryThresh, mode=cv2.RETR_TREE, method=cv2.CHAIN_APPROX_NONE)
+
+#draw contours on original image
+imageCopy = OriginalImage.copy()
+cv2.drawContours(image=imageCopy, contours= contours, contourIdx=-1, color=(0, 255, 0), thickness=2, lineType=cv2.LINE_AA)
+cv2.imwrite('.\\images\\Contouring\\imageContours.png',imageCopy)
