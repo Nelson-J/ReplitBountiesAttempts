@@ -1,4 +1,4 @@
-from PIL import Image
+from imagePrepocessingTest import preprocessFromFile
 import pytesseract
 import os
 import re
@@ -16,7 +16,7 @@ scriptDirectory = os.path.dirname(os.path.abspath(__file__))
 os.chdir(scriptDirectory)
 
 image_folder = r'.\images'
-bwTestImage = r'.\\images\\to_OCR\\ready.png'
+#bwTestImage = r'.\\images\\to_OCR\\ready.png'
 
 fullNames=[]
 companyNames=[]
@@ -38,10 +38,11 @@ for filename  in os.listdir(image_folder):
         #image = Image.open(os.path.join(image_folder, filename))
         imageFromFile = cv2.imread(os.path.join(image_folder,filename))
         #preprocessing image
-        grayscaleImage = cv2.cvtColor(imageFromFile,cv2.COLOR_BGR2GRAY)
+        #grayscaleImage = cv2.cvtColor(imageFromFile,cv2.COLOR_BGR2GRAY)
         #imageThreshold = cv2.adaptiveThreshold(grayscaleImage,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,cv2.THRESH_BINARY,11,5)
-        ret, imageThreshold = cv2.threshold(grayscaleImage, 127, 255, cv2.THRESH_OTSU | cv2.THRESH_BINARY_INV)
-        extractedText = pytesseract.image_to_string(bwTestImage)
+        #ret, imageThreshold = cv2.threshold(grayscaleImage, 127, 255, cv2.THRESH_OTSU | cv2.THRESH_BINARY_INV)
+        readyImage = preprocessFromFile(imageFromFile)
+        extractedText = pytesseract.image_to_string(readyImage)
         print(extractedText)
 
         #prepocessing text

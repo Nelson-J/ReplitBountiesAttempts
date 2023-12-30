@@ -4,18 +4,18 @@ import os
 
 def preprocessFromFile(file):
     # Get the directory of the current script
-    scriptDirectory = os.path.dirname(os.path.abspath(__file__))
-    os.chdir(scriptDirectory)
-    cwd = os.getcwd()
+    #scriptDirectory = os.path.dirname(os.path.abspath(__file__))
+    #os.chdir(scriptDirectory)
+    #cwd = os.getcwd()
 
     #OriginalImage = cv2.imread('.\\images\\screenshot_20231014_161427.png')
-    OriginalImage = cv2.imread(file)
+    OriginalImage = file
 
     #Read and convert image to grayscale
-    grayImage = cv2.imread(file,0)
+    grayImage = cv2.cvtColor(OriginalImage,cv2.COLOR_BGR2GRAY)
     if (grayImage is None) or (OriginalImage is None):
         print("File Does not exist at location: ")
-        print(cwd)
+        #print(cwd)
         exit(0)
 
     #apply binary threshold
