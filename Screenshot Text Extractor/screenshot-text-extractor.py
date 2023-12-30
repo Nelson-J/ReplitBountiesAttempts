@@ -16,6 +16,7 @@ scriptDirectory = os.path.dirname(os.path.abspath(__file__))
 os.chdir(scriptDirectory)
 
 image_folder = r'.\images'
+bwTestImage = r'.\\images\\to_OCR\\ready.png'
 
 fullNames=[]
 companyNames=[]
@@ -32,64 +33,52 @@ countCompanies=0
 countRoles=0
 
 #for every file in the folder
-for filename in os.listdir(image_folder):
-    #image = Image.open(os.path.join(image_folder, filename))
-    imageFromFile = cv2.imread(os.path.join(image_folder,filename))
-    #preprocessing image
-    grayscaleImage = cv2.cvtColor(imageFromFile,cv2.COLOR_BGR2GRAY)
-    #imageThreshold = cv2.adaptiveThreshold(grayscaleImage,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,cv2.THRESH_BINARY,11,5)
-    ret, imageThreshold = cv2.threshold(grayscaleImage, 127, 255, cv2.THRESH_OTSU | cv2.THRESH_BINARY_INV)
-    extractedText = pytesseract.image_to_string(imageThreshold)
-    print(extractedText)
+for filename  in os.listdir(image_folder):
+    if filename.endswith('.png') or filename.endswith('.jpg'):
+        #image = Image.open(os.path.join(image_folder, filename))
+        imageFromFile = cv2.imread(os.path.join(image_folder,filename))
+        #preprocessing image
+        grayscaleImage = cv2.cvtColor(imageFromFile,cv2.COLOR_BGR2GRAY)
+        #imageThreshold = cv2.adaptiveThreshold(grayscaleImage,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,cv2.THRESH_BINARY,11,5)
+        ret, imageThreshold = cv2.threshold(grayscaleImage, 127, 255, cv2.THRESH_OTSU | cv2.THRESH_BINARY_INV)
+        extractedText = pytesseract.image_to_string(bwTestImage)
+        print(extractedText)
 
-    #prepocessing text
-    lines = extractedText.split("\n")
+        #prepocessing text
+        lines = extractedText.split("\n")
 
-    for line in lines:
-        
-        #getting full names
-        if len(line)>2 and line[0].islower() and any(char.isupper for char in line):
-        #line starts with a small letter, contains a capital letter, and has a length greater than 2
-
-            patternName = r'\b([A-Z][a-zA-Z]*\s+\b[A-Z][a-zA-Z]*)' #match consecutive words starting with a capital letter
-            matchName = re.findall(patternName,line)
+        for line in lines:
             
-            #if matchName:
-             #   print(matchName[0])
-              #  fullNames.append(matchName[0])
-               # countNames+=1
+            #getting full names
+            if len(line)>2 and line[0].islower() and any(char.isupper for char in line):
+            #line starts with a small letter, contains a capital letter, and has a length greater than 2
 
-        #company
-        patternCompany = r'^([A-Z].*?)\s-\s' #get text before first hyphen
-        matchCompany = re.findall(patternCompany, line) 
-        #if matchCompany: #no company without fullName
-            #print(matchCompany[0])
-            #companyNames.append(matchCompany[0])
-            #countCompanies+=1
+                patternName = r'\b([A-Z][a-zA-Z]*\s+\b[A-Z][a-zA-Z]*)' #match consecutive words starting with a capital letter
+                matchName = re.findall(patternName,line)
 
-        #roles
-        patternRoles = r'(?<=-)(?:(?!\b\w\b).)*' #match text after the first hyphen, ignore one-character words
-        matchRole = re.findall(patternRoles,line)
-        #if matchRole: 
-            #print(matchRole[0])
-            #roles.append(matchRole[0])
-            #countRoles+=1
-        #add data to list only if Name, Role and Company are set.
+            #company
+            patternCompany = r'^([A-Z].*?)\s-\s' #get text before first hyphen
+            matchCompany = re.findall(patternCompany, line) 
 
-        if (not matchName) or (not matchRole) or (not matchCompany):
-            continue
-        else:
-            fullNames.append(matchName[0])
-            countNames+=1
-            companyNames.append(matchCompany[0])
-            countCompanies+=1
-            roles.append(matchRole[0])
-            countRoles+=1
+            #roles
+            patternRoles = r'(?<=-)(?:(?!\b\w\b).)*' #match text after the first hyphen, ignore one-character words
+            matchRole = re.findall(patternRoles,line)
+                
+            #add data to list only if Name, Role and Company are set.
+            if (not matchName) or (not matchRole) or (not matchCompany):
+                continue
+            else:
+                fullNames.append(matchName[0])
+                countNames+=1
+                companyNames.append(matchCompany[0])
+                countCompanies+=1
+                roles.append(matchRole[0])
+                countRoles+=1
 
-            print(matchName[0])
-            print(matchRole[0])
-            print(matchCompany[0])
-            print("======================")
+                print(matchName[0])
+                #print(matchRole[0])
+                #print(matchCompany[0])
+                #print("======================")
         
 
 print('Name Count ', countNames)
