@@ -35,12 +35,7 @@ countRoles=0
 #for every file in the folder
 for filename  in os.listdir(image_folder):
     if filename.endswith('.png') or filename.endswith('.jpg'):
-        #image = Image.open(os.path.join(image_folder, filename))
         imageFromFile = cv2.imread(os.path.join(image_folder,filename))
-        #preprocessing image
-        #grayscaleImage = cv2.cvtColor(imageFromFile,cv2.COLOR_BGR2GRAY)
-        #imageThreshold = cv2.adaptiveThreshold(grayscaleImage,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,cv2.THRESH_BINARY,11,5)
-        #ret, imageThreshold = cv2.threshold(grayscaleImage, 127, 255, cv2.THRESH_OTSU | cv2.THRESH_BINARY_INV)
         readyImage = preprocessFromFile(imageFromFile)
         extractedText = pytesseract.image_to_string(readyImage)
         print(extractedText)
@@ -49,14 +44,10 @@ for filename  in os.listdir(image_folder):
         lines = extractedText.split("\n")
 
         for line in lines:
-            
             #getting full names
-            if len(line)>2 and line[0].islower() and any(char.isupper for char in line):
-            #line starts with a small letter, contains a capital letter, and has a length greater than 2
-
-                patternName = r'\b([A-Z][a-zA-Z]*\s+\b[A-Z][a-zA-Z]*)' #match consecutive words starting with a capital letter
-                matchName = re.findall(patternName,line)
-
+            patternName = r"^(\b[A-Z][a-z]*\b\s\b[A-Z][a-z]*\b)$" #match consecutive words starting with a capital letter
+            matchName = re.findall(patternName,line)
+            #print(matchName)
             #company
             patternCompany = r'^([A-Z].*?)\s-\s' #get text before first hyphen
             matchCompany = re.findall(patternCompany, line) 

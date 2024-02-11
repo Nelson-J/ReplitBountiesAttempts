@@ -3,15 +3,9 @@ import cv2
 import os
 
 def preprocessFromFile(file):
-    # Get the directory of the current script
-    #scriptDirectory = os.path.dirname(os.path.abspath(__file__))
-    #os.chdir(scriptDirectory)
-    #cwd = os.getcwd()
-
-    #OriginalImage = cv2.imread('.\\images\\screenshot_20231014_161427.png')
     OriginalImage = file
 
-    #Read and convert image to grayscale
+    #Convert image to grayscale
     grayImage = cv2.cvtColor(OriginalImage,cv2.COLOR_BGR2GRAY)
     if (grayImage is None) or (OriginalImage is None):
         print("File Does not exist at location: ")
@@ -45,5 +39,4 @@ def preprocessFromFile(file):
     readyImage = cv2.bitwise_and(OriginalImage,OriginalImage,mask=mask)
 
    # cv2.imwrite('.\\images\\to_OCR\\ready.png',readyImage)
-
     return readyImage
